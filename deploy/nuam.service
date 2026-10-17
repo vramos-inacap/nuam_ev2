@@ -1,0 +1,14 @@
+# /etc/systemd/system/nuam.service
+[Unit]
+Description=NUAM Calificaciones (Gunicorn)
+After=network.target postgresql.service mongod.service
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/nuam
+EnvironmentFile=/opt/nuam/.env
+ExecStart=/opt/nuam/venv/bin/gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

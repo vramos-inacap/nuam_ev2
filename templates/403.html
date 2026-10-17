@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Acceso denegado{% endblock %}
+{% block contenido %}
+<div class="alert alert-danger">
+  <h1 class="h4">403 · Acceso denegado</h1>
+  <p class="mb-0">Tu perfil no tiene permiso para realizar esta acción.</p>
+</div>
+<a class="btn btn-outline-secondary" href="{% url 'panel' %}">Volver al panel</a>
+{% endblock %}

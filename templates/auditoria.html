@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Auditoría{% endblock %}
+{% block contenido %}
+<h1 class="h3 mb-3">Historial de auditoría</h1>
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle mb-0">
+      <thead class="table-dark"><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>IP</th></tr></thead>
+      <tbody>
+        {% for e in pagina %}
+        <tr>
+          <td>{{ e.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+          <td>{{ e.usuario.get_username|default:"—" }}</td>
+          <td>{{ e.accion_realizada }}</td>
+          <td>{{ e.ip_origen|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted py-4">Sin eventos registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if pagina.has_other_pages %}
+<nav class="mt-3"><ul class="pagination">
+  {% if pagina.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ pagina.previous_page_number }}">Anterior</a></li>{% endif %}
+  <li class="page-item disabled"><span class="page-link">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span></li>
+  {% if pagina.has_next %}<li class="page-item"><a class="page-link" href="?page={{ pagina.next_page_number }}">Siguiente</a></li>{% endif %}
+</ul></nav>
+{% endif %}
+{% endblock %}

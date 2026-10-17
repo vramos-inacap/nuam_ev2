@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}Calificación #{{ cal.pk }}{% endblock %}
+{% block contenido %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h1 class="h4 mb-3">Detalle de Calificación Tributaria</h1>
+    <dl class="row mb-0">
+      <dt class="col-sm-4">ID</dt><dd class="col-sm-8">{{ cal.pk }}</dd>
+      <dt class="col-sm-4">RUT emisor</dt><dd class="col-sm-8">{{ cal.rut_emisor }}</dd>
+      <dt class="col-sm-4">Período anual</dt><dd class="col-sm-8">{{ cal.periodo_anual }}</dd>
+      <dt class="col-sm-4">Monto tributario</dt><dd class="col-sm-8">${{ cal.monto_tributario }}</dd>
+      <dt class="col-sm-4">Estado</dt><dd class="col-sm-8">{% include "_estado.html" with estado=cal.estado %}</dd>
+      <dt class="col-sm-4">Creada por</dt><dd class="col-sm-8">{{ cal.usuario.get_username|default:"—" }} el {{ cal.fecha_creacion|date:"d/m/Y H:i" }}</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h5">Certificado asociado (MongoDB)</h2>
+    {% if error_mongo %}
+      <div class="alert alert-warning mb-0">MongoDB no está disponible en este momento.</div>
+    {% elif certificado %}
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Empresa</dt><dd class="col-sm-8">{{ certificado.empresa|default:"—" }}</dd>
+        <dt class="col-sm-4">Tipo de certificado</dt><dd class="col-sm-8">{{ certificado.tipo_certificado|default:"—" }}</dd>
+        <dt class="col-sm-4">Observaciones</dt><dd class="col-sm-8">{{ certificado.detalle_no_estructurado.observaciones|default:"—" }}</dd>
+        <dt class="col-sm-4">Evaluador</dt><dd class="col-sm-8">{{ certificado.detalle_no_estructurado.evaluador|default:"—" }}</dd>
+      </dl>
+    {% else %}
+      <p class="text-muted mb-0">No hay un certificado asociado a esta calificación.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% if eventos %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h5">Últimos eventos de auditoría</h2>
+    <ul class="mb-0">
+      {% for e in eventos %}
+      <li>{{ e.fecha_hora|date:"d/m/Y H:i" }} · {{ e.usuario.get_username|default:"—" }} · {{ e.accion_realizada }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+<div class="d-flex flex-wrap gap-2 justify-content-between">
+  <a class="btn btn-outline-secondary" href="{% url 'panel' %}">Volver al panel</a>
+  <div class="d-flex gap-2">
+    {% if perms.calificaciones.change_calificaciontributaria %}
+    <a class="btn btn-primary" href="{% url 'editar' cal.pk %}">Editar</a>
+    {% endif %}
+    {% if perms.calificaciones.delete_calificaciontributaria %}
+    <form method="post" action="{% url 'eliminar' cal.pk %}" onsubmit="return confirm('¿Eliminar esta calificación? Quedará registrado en la auditoría.');">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit">Eliminar registro</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
